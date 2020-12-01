@@ -1,4 +1,5 @@
 use std::fs;
+use std::time::Instant;
 
 #[test]
 fn find_two_summands_should_solve_example_1() {
@@ -11,7 +12,6 @@ fn find_three_summands_should_solve_example_1() {
     let input = vec![1721, 979, 366, 299, 675, 1456];
     assert_eq!(find_three_summands(&input, 2020), Some((979, 366, 675)));
 }
-
 
 fn find_two_summands(potential_summands: &Vec<i32>, sum: i32) -> Option<(i32, i32)> {
     for a in potential_summands {
@@ -40,8 +40,10 @@ fn read_input() -> Vec<i32> {
 
 fn part_one() {
     let input = read_input();
+    let now = Instant::now();
     let summands = find_two_summands(&input, 2020);
     if let Some(summands) = summands {
+        println!("Part one took {} micro seconds", now.elapsed().as_micros());
         println!("Result of part one:\n{}\n", summands.0 * summands.1);
     } else {
         println!("No result found for part one.");
@@ -50,8 +52,10 @@ fn part_one() {
 
 fn part_two() {
     let input = read_input();
+    let now = Instant::now();
     let summands = find_three_summands(&input, 2020);
     if let Some(summands) = summands {
+        println!("Part one took {} micro seconds", now.elapsed().as_micros());
         println!("Result of part two:\n{}\n", summands.0 * summands.1 * summands.2);
     } else {
         println!("No result found for part two.");
