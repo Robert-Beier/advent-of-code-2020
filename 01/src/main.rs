@@ -33,29 +33,27 @@ fn find_three_summands(potential_summands: &Vec<i32>, sum: i32) -> Option<(i32, 
     None
 }
 
-fn read_input() -> Vec<i32> {
+fn read_input() ->  Vec<i32> {
     let input = fs::read_to_string("input.txt").expect("Failed reading input.txt");
     input.lines().map(|n| n.parse::<i32>().expect("Failed to parse number.")).collect()
 }
 
-fn part_one() {
-    let input = read_input();
+fn part_one(potential_summands: &Vec<i32>) {
     let now = Instant::now();
-    let summands = find_two_summands(&input, 2020);
+    let summands = find_two_summands(potential_summands, 2020);
     if let Some(summands) = summands {
-        println!("Part one took {} micro seconds", now.elapsed().as_micros());
+        println!("Part one took {} nano seconds", now.elapsed().as_nanos());
         println!("Result of part one:\n{}\n", summands.0 * summands.1);
     } else {
         println!("No result found for part one.");
     }
 }
 
-fn part_two() {
-    let input = read_input();
+fn part_two(potential_summands: &Vec<i32>) {
     let now = Instant::now();
-    let summands = find_three_summands(&input, 2020);
+    let summands = find_three_summands(potential_summands, 2020);
     if let Some(summands) = summands {
-        println!("Part one took {} micro seconds", now.elapsed().as_micros());
+        println!("Part one took {} nano seconds", now.elapsed().as_nanos());
         println!("Result of part two:\n{}\n", summands.0 * summands.1 * summands.2);
     } else {
         println!("No result found for part two.");
@@ -64,6 +62,8 @@ fn part_two() {
 }
 
 fn main() {
-    part_one();
-    part_two();
+    let mut input = read_input();
+    input.sort();
+    part_one(&input);
+    part_two(&input);
 }
