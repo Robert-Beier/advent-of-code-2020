@@ -7,3 +7,4 @@ Written in Rust by Robert Beier.
 |day|part one|part two|
 |---|---|---|
 |01|150ns|71μs|
+|02|95μs||
