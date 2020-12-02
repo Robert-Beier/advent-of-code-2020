@@ -1,5 +1,6 @@
 use regex::Regex;
 use std::fs;
+use std::time::Instant;
 
 #[derive(Debug)]
 struct PasswordAndPolicy {
@@ -25,7 +26,21 @@ fn read_input() -> Vec<PasswordAndPolicy> {
         .collect()
 }
 
+fn part_one(passwords_and_policies: Vec<PasswordAndPolicy>) {
+    let now = Instant::now();
+    let number_of_valid_passwords = passwords_and_policies
+        .iter()
+        .filter(|x| {
+            let count = x.password.matches(x.required_character).count();
+            count <= x.required_character_max_count as usize
+                && count >= x.required_character_min_count as usize
+        })
+        .count();
+    println!("Part one took {} nano seconds", now.elapsed().as_nanos());
+    println!("Result of part one:\n{}\n", number_of_valid_passwords);
+}
+
 fn main() {
     let passwords_and_policies = read_input();
-    println!("{:?}", passwords_and_policies);
+    part_one(passwords_and_policies);
 }
