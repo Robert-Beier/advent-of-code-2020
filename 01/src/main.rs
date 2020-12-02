@@ -38,8 +38,9 @@ fn read_input() ->  Vec<i32> {
     input.lines().map(|n| n.parse::<i32>().expect("Failed to parse number.")).collect()
 }
 
-fn part_one(potential_summands: &Vec<i32>) {
+fn part_one(potential_summands: &mut Vec<i32>) {
     let now = Instant::now();
+    potential_summands.sort();
     let summands = find_two_summands(potential_summands, 2020);
     if let Some(summands) = summands {
         println!("Part one took {} nano seconds", now.elapsed().as_nanos());
@@ -49,8 +50,9 @@ fn part_one(potential_summands: &Vec<i32>) {
     }
 }
 
-fn part_two(potential_summands: &Vec<i32>) {
+fn part_two(potential_summands: &mut Vec<i32>) {
     let now = Instant::now();
+    potential_summands.sort();
     let summands = find_three_summands(potential_summands, 2020);
     if let Some(summands) = summands {
         println!("Part one took {} nano seconds", now.elapsed().as_nanos());
@@ -63,7 +65,6 @@ fn part_two(potential_summands: &Vec<i32>) {
 
 fn main() {
     let mut input = read_input();
-    input.sort();
-    part_one(&input);
-    part_two(&input);
+    part_one(&mut input);
+    part_two(&mut input);
 }
