@@ -6,8 +6,8 @@ use std::time::Instant;
 struct PasswordAndPolicy {
     password: String,
     required_character: char,
-    required_character_min_count: u32,
-    required_character_max_count: u32,
+    first_number: u32,
+    second_number: u32,
 }
 
 fn read_input() -> Vec<PasswordAndPolicy> {
@@ -18,29 +18,50 @@ fn read_input() -> Vec<PasswordAndPolicy> {
         .map(|line| regex.captures(line))
         .map(|cap| cap.unwrap())
         .map(|cap| PasswordAndPolicy {
-            required_character_min_count: (&cap[1]).parse().unwrap(),
-            required_character_max_count: (&cap[2]).parse().unwrap(),
+            first_number: (&cap[1]).parse().unwrap(),
+            second_number: (&cap[2]).parse().unwrap(),
             required_character: (&cap[3]).parse().unwrap(),
             password: (&cap[4]).to_string(),
         })
         .collect()
 }
 
-fn part_one(passwords_and_policies: Vec<PasswordAndPolicy>) {
+fn part_one(passwords_and_policies: &Vec<PasswordAndPolicy>) {
     let now = Instant::now();
     let number_of_valid_passwords = passwords_and_policies
         .iter()
         .filter(|x| {
             let count = x.password.matches(x.required_character).count();
-            count <= x.required_character_max_count as usize
-                && count >= x.required_character_min_count as usize
+            count <= x.second_number as usize && count >= x.first_number as usize
         })
         .count();
     println!("Part one took {} nano seconds", now.elapsed().as_nanos());
     println!("Result of part one:\n{}\n", number_of_valid_passwords);
 }
+fn part_two(passwords_and_policies: &Vec<PasswordAndPolicy>) {
+    let now = Instant::now();
+    let number_of_valid_passwords = passwords_and_policies
+        .iter()
+        .filter(|x| {
+            (x.password
+                .chars()
+                .nth((x.first_number - 1) as usize)
+                .unwrap()
+                == x.required_character)
+                != (x
+                    .password
+                    .chars()
+                    .nth((x.second_number - 1) as usize)
+                    .unwrap()
+                    == x.required_character)
+        })
+        .count();
+    println!("Part two took {} nano seconds", now.elapsed().as_nanos());
+    println!("Result of part two:\n{}\n", number_of_valid_passwords);
+}
 
 fn main() {
     let passwords_and_policies = read_input();
-    part_one(passwords_and_policies);
+    part_one(&passwords_and_policies);
+    part_two(&passwords_and_policies);
 }
