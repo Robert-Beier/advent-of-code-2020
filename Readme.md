@@ -9,3 +9,4 @@ Written in Rust by Robert Beier.
 |01|9μs|71μs|
 |02|95μs|34μs|
 |03|22μs|89μs|
+|04|54μs||
