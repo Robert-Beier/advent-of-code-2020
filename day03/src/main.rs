@@ -1,5 +1,5 @@
+use lib::solve;
 use std::fs;
-use std::time::Instant;
 
 struct Config {
     x: usize,
@@ -22,27 +22,23 @@ fn count_trees(input: &String, config: &Config) -> usize {
 }
 
 fn part_two(input: &String) {
-    let now = Instant::now();
-    let configs = [
-        Config { x: 1, y: 1 },
-        Config { x: 3, y: 1 },
-        Config { x: 5, y: 1 },
-        Config { x: 7, y: 1 },
-        Config { x: 1, y: 2 },
-    ];
-    let number_of_trees = configs
-        .iter()
-        .map(|config| count_trees(input, config))
-        .fold(1, |a, n| a * n);
-    println!("Part two took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part two:\n{}\n", number_of_trees);
+    solve("Part two", || {
+        let configs = [
+            Config { x: 1, y: 1 },
+            Config { x: 3, y: 1 },
+            Config { x: 5, y: 1 },
+            Config { x: 7, y: 1 },
+            Config { x: 1, y: 2 },
+        ];
+        configs
+            .iter()
+            .map(|config| count_trees(input, config))
+            .fold(1, |a, n| a * n)
+    });
 }
 
 fn part_one(input: &String) {
-    let now = Instant::now();
-    let number_of_trees = count_trees(&input, &Config { x: 3, y: 1 });
-    println!("Part one took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part one:\n{}\n", number_of_trees);
+    solve("Part one", || count_trees(&input, &Config { x: 3, y: 1 }));
 }
 
 fn main() {

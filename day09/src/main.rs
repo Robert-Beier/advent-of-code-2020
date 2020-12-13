@@ -1,6 +1,5 @@
-use std::fmt::Display;
+use lib::solve;
 use std::fs;
-use std::time::Instant;
 
 #[test]
 fn find_two_summands_should_solve_example_1() {
@@ -101,14 +100,6 @@ fn part_two(numbers: &[usize]) {
         let max = summands.iter().max().unwrap();
         min + max
     })
-}
-
-fn solve<F: Fn() -> T, T: Display>(name: &str, f: F) {
-    let now = Instant::now();
-    let solution = f();
-    println!("{}", name);
-    println!("Duration: {}μs", now.elapsed().as_micros());
-    println!("Solution: {}\n", solution);
 }
 
 fn main() {

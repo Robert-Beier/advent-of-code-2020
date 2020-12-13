@@ -1,5 +1,5 @@
+use lib::solve;
 use std::fs;
-use std::time::Instant;
 
 #[test]
 fn find_two_summands_should_solve_example_1() {
@@ -33,34 +33,30 @@ fn find_three_summands(potential_summands: &Vec<i32>, sum: i32) -> Option<(i32, 
     None
 }
 
-fn read_input() ->  Vec<i32> {
+fn read_input() -> Vec<i32> {
     let input = fs::read_to_string("input.txt").expect("Failed reading input.txt");
-    input.lines().map(|n| n.parse::<i32>().expect("Failed to parse number.")).collect()
+    input
+        .lines()
+        .map(|n| n.parse::<i32>().expect("Failed to parse number."))
+        .collect()
 }
 
 fn part_one(potential_summands: &mut Vec<i32>) {
-    let now = Instant::now();
+    // sorting should be moved in again for realistic measurement
     potential_summands.sort();
-    let summands = find_two_summands(potential_summands, 2020);
-    if let Some(summands) = summands {
-        println!("Part one took {} nano seconds", now.elapsed().as_nanos());
-        println!("Result of part one:\n{}\n", summands.0 * summands.1);
-    } else {
-        println!("No result found for part one.");
-    }
+    solve("Part one", || {
+        let summands = find_two_summands(potential_summands, 2020).unwrap();
+
+        summands.0 * summands.1
+    });
 }
 
 fn part_two(potential_summands: &mut Vec<i32>) {
-    let now = Instant::now();
     potential_summands.sort();
-    let summands = find_three_summands(potential_summands, 2020);
-    if let Some(summands) = summands {
-        println!("Part one took {} nano seconds", now.elapsed().as_nanos());
-        println!("Result of part two:\n{}\n", summands.0 * summands.1 * summands.2);
-    } else {
-        println!("No result found for part two.");
-    }
-
+    solve("Part two", || {
+        let summands = find_three_summands(potential_summands, 2020).unwrap();
+        summands.0 * summands.1 * summands.2
+    })
 }
 
 fn main() {

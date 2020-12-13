@@ -2,10 +2,10 @@
 extern crate lazy_static;
 extern crate regex;
 
+use lib::solve;
 use regex::{Captures, Regex};
 use std::collections::HashMap;
 use std::fs;
-use std::time::Instant;
 
 fn read_input() -> Vec<HashMap<String, String>> {
     let input: String = fs::read_to_string("input.txt").expect("Failed reading input.txt");
@@ -29,39 +29,37 @@ fn read_input() -> Vec<HashMap<String, String>> {
 
 fn part_one(passports: &Vec<HashMap<String, String>>) {
     let required_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
-    let now = Instant::now();
-    let number_of_valid_passports = passports
-        .iter()
-        .filter(|passport| {
-            required_fields
-                .iter()
-                .filter(|field| !passport.contains_key(**field))
-                .count()
-                == 0
-        })
-        .count();
-    println!("Part one took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part one:\n{}\n", number_of_valid_passports);
+    solve("Part one", || {
+        passports
+            .iter()
+            .filter(|passport| {
+                required_fields
+                    .iter()
+                    .filter(|field| !passport.contains_key(**field))
+                    .count()
+                    == 0
+            })
+            .count()
+    });
 }
 
 fn part_two(passports: &Vec<HashMap<String, String>>) {
     let required_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
-    let now = Instant::now();
-    let number_of_valid_passports = passports
-        .iter()
-        .filter(|passport| {
-            required_fields
-                .iter()
-                .filter(|field| {
-                    !passport.contains_key(**field)
-                        || !validate_field(**field, passport.get(**field).unwrap())
-                })
-                .count()
-                == 0
-        })
-        .count();
-    println!("Part two took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part two:\n{}\n", number_of_valid_passports);
+    solve("Part two", || {
+        passports
+            .iter()
+            .filter(|passport| {
+                required_fields
+                    .iter()
+                    .filter(|field| {
+                        !passport.contains_key(**field)
+                            || !validate_field(**field, passport.get(**field).unwrap())
+                    })
+                    .count()
+                    == 0
+            })
+            .count()
+    });
 }
 
 fn validate_field(field: &str, value: &str) -> bool {

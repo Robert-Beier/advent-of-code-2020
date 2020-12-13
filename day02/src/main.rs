@@ -1,6 +1,6 @@
+use lib::solve;
 use regex::Regex;
 use std::fs;
-use std::time::Instant;
 
 #[derive(Debug)]
 struct PasswordAndPolicy {
@@ -27,37 +27,35 @@ fn read_input() -> Vec<PasswordAndPolicy> {
 }
 
 fn part_one(passwords_and_policies: &Vec<PasswordAndPolicy>) {
-    let now = Instant::now();
-    let number_of_valid_passwords = passwords_and_policies
-        .iter()
-        .filter(|x| {
-            let count = x.password.matches(x.required_character).count();
-            count <= x.second_number as usize && count >= x.first_number as usize
-        })
-        .count();
-    println!("Part one took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part one:\n{}\n", number_of_valid_passwords);
+    solve("Part one", || {
+        passwords_and_policies
+            .iter()
+            .filter(|x| {
+                let count = x.password.matches(x.required_character).count();
+                count <= x.second_number as usize && count >= x.first_number as usize
+            })
+            .count()
+    })
 }
 fn part_two(passwords_and_policies: &Vec<PasswordAndPolicy>) {
-    let now = Instant::now();
-    let number_of_valid_passwords = passwords_and_policies
-        .iter()
-        .filter(|x| {
-            (x.password
-                .chars()
-                .nth((x.first_number - 1) as usize)
-                .unwrap()
-                == x.required_character)
-                != (x
-                    .password
+    solve("Part two", || {
+        passwords_and_policies
+            .iter()
+            .filter(|x| {
+                (x.password
                     .chars()
-                    .nth((x.second_number - 1) as usize)
+                    .nth((x.first_number - 1) as usize)
                     .unwrap()
                     == x.required_character)
-        })
-        .count();
-    println!("Part two took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part two:\n{}\n", number_of_valid_passwords);
+                    != (x
+                        .password
+                        .chars()
+                        .nth((x.second_number - 1) as usize)
+                        .unwrap()
+                        == x.required_character)
+            })
+            .count()
+    })
 }
 
 fn main() {
