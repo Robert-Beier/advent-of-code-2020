@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::fs;
 use std::time::Instant;
 
@@ -89,21 +90,25 @@ fn find_contiguous_summands(numbers: &[usize], sum: usize) -> &[usize] {
 }
 
 fn part_one(numbers: &[usize]) {
-    let now = Instant::now();
-    let solution = find_first_invalid_number(numbers, 25);
-    println!("Part one took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part one:\n{:?}\n", solution);
+    solve("Part one", || find_first_invalid_number(numbers, 25));
 }
 
 fn part_two(numbers: &[usize]) {
     let invalid_number = find_first_invalid_number(numbers, 25);
+    solve("Part two", || {
+        let summands = find_contiguous_summands(numbers, invalid_number);
+        let min = summands.iter().min().unwrap();
+        let max = summands.iter().max().unwrap();
+        min + max
+    })
+}
+
+fn solve<F: Fn() -> T, T: Display>(name: &str, f: F) {
     let now = Instant::now();
-    let summands = find_contiguous_summands(numbers, invalid_number);
-    let min = summands.iter().min().unwrap();
-    let max = summands.iter().max().unwrap();
-    let solution = min + max;
-    println!("Part two took {} nano seconds", now.elapsed().as_nanos());
-    println!("Result of part two:\n{:?}\n", solution);
+    let solution = f();
+    println!("{}", name);
+    println!("Duration: {}μs", now.elapsed().as_micros());
+    println!("Solution: {}\n", solution);
 }
 
 fn main() {
