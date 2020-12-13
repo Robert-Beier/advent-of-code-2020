@@ -1,0 +1,83 @@
+use std::fs;
+use std::time::Instant;
+
+#[test]
+fn find_two_summands_should_solve_example_1() {
+    let input = vec![1721, 979, 366, 299, 675, 1456];
+    assert_eq!(find_two_summands(&input, 2020), Some((1721, 299)));
+}
+
+#[test]
+fn find_two_summands_should_work_with_inputs_smaller_than_sum() {
+    let input = vec![1721, 3000, 366, 299, 675, 1456];
+    assert_eq!(find_two_summands(&input, 2020), Some((1721, 299)));
+}
+
+fn find_two_summands(potential_summands: &[usize], sum: usize) -> Option<(usize, usize)> {
+    for (index, a) in potential_summands.iter().enumerate() {
+        let b = potential_summands
+            .iter()
+            .enumerate()
+            .find(|(i, x)| *i != index && sum >= *a && **x == (sum - a));
+        if let Some((_, b)) = b {
+            return Some((*a, *b));
+        }
+    }
+    None
+}
+
+#[test]
+fn is_number_valid_should_return_true_for_valid_number() {
+    let preamble: Vec<usize> = (1..26).collect();
+    let number = 49;
+    assert_eq!(is_number_valid(&*preamble, number), true);
+}
+
+#[test]
+fn is_number_valid_should_return_false_for_invalid_number() {
+    let preamble: Vec<usize> = (1..26).collect();
+    let number = 50;
+    assert_eq!(is_number_valid(&*preamble, number), false);
+}
+
+fn is_number_valid(preamble: &[usize], number: usize) -> bool {
+    find_two_summands(preamble, number).is_some()
+}
+
+#[test]
+
+fn find_first_invalid_number_should_solve_example_1() {
+    let numbers = &[
+        35, 20, 15, 25, 47, 40, 62, 55, 65, 95, 102, 117, 150, 182, 127, 219, 299, 277, 309, 576,
+    ];
+    assert_eq!(find_first_invalid_number(numbers, 5), 127);
+}
+
+fn find_first_invalid_number(numbers: &[usize], preamble_length: usize) -> usize {
+    *numbers
+        .split_at(preamble_length)
+        .1
+        .iter()
+        .enumerate()
+        .find(|(i, n)| !is_number_valid(&numbers[*i..i + preamble_length], **n))
+        .unwrap()
+        .1
+}
+
+fn part_one(numbers: &[usize]) {
+    let now = Instant::now();
+    let solution = find_first_invalid_number(numbers, 25);
+    println!("Part one took {} nano seconds", now.elapsed().as_nanos());
+    println!("Result of part one:\n{:?}\n", solution);
+}
+
+fn main() {
+    let input: Vec<usize> = fs::read_to_string("input.txt")
+        .expect("Failed reading input.txt")
+        .trim()
+        .to_string()
+        .lines()
+        .map(|l| l.parse().unwrap())
+        .collect();
+    part_one(&input);
+}
