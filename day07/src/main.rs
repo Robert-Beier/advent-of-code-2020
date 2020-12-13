@@ -2,6 +2,7 @@
 extern crate lazy_static;
 extern crate regex;
 
+use lib::read_input;
 use regex::{Captures, Regex};
 use std::fs;
 
@@ -47,15 +48,8 @@ fn create_rules_list(input: &String) -> Vec<Rule> {
 
 fn create_rules_tree() {}
 
-fn read_input() {
-    let input: String = fs::read_to_string("input.txt")
-        .expect("Failed reading input.txt")
-        .trim()
-        .to_string();
+fn main() {
+    let input: String = read_input();
     let rules = create_rules_list(&input);
     println!("{:?}", rules);
-}
-
-fn main() {
-    read_input();
 }

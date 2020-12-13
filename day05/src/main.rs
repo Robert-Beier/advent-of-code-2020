@@ -1,6 +1,5 @@
-use lib::solve;
+use lib::{read_input, solve};
 use std::collections::HashSet;
-use std::fs;
 
 fn get_row(encoded_row: &str) -> usize {
     let binary_row: String = encoded_row
@@ -54,7 +53,7 @@ fn part_two(input: &String) {
 }
 
 fn main() {
-    let input: String = fs::read_to_string("input.txt").expect("Failed reading input.txt");
+    let input: String = read_input();
     part_one(&input);
     part_two(&input);
 }

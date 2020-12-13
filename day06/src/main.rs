@@ -1,6 +1,5 @@
-use lib::solve;
+use lib::{read_input, solve};
 use std::collections::{HashMap, HashSet};
-use std::fs;
 
 fn part_one(input: &String) {
     solve("Part one", || {
@@ -44,10 +43,7 @@ fn part_two(input: &String) {
 }
 
 fn main() {
-    let input: String = fs::read_to_string("input.txt")
-        .expect("Failed reading input.txt")
-        .trim()
-        .to_string();
+    let input: String = read_input();
     part_one(&input);
     part_two(&input);
 }

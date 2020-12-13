@@ -1,5 +1,4 @@
-use lib::solve;
-use std::fs;
+use lib::{read_input, solve};
 
 struct Config {
     x: usize,
@@ -42,7 +41,7 @@ fn part_one(input: &String) {
 }
 
 fn main() {
-    let input = fs::read_to_string("input.txt").expect("Failed reading input.txt");
+    let input = read_input();
     part_one(&input);
     part_two(&input);
 }

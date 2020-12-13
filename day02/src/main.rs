@@ -1,6 +1,5 @@
-use lib::solve;
+use lib::{read_input, solve};
 use regex::Regex;
-use std::fs;
 
 #[derive(Debug)]
 struct PasswordAndPolicy {
@@ -10,8 +9,7 @@ struct PasswordAndPolicy {
     second_number: u32,
 }
 
-fn read_input() -> Vec<PasswordAndPolicy> {
-    let input = fs::read_to_string("input.txt").expect("Failed reading input.txt");
+fn parse_input(input: String) -> Vec<PasswordAndPolicy> {
     let regex = Regex::new(r"(\d+)-(\d+) ([a-z]): ([a-z]+)").unwrap();
     input
         .lines()
@@ -59,7 +57,7 @@ fn part_two(passwords_and_policies: &Vec<PasswordAndPolicy>) {
 }
 
 fn main() {
-    let passwords_and_policies = read_input();
+    let passwords_and_policies = parse_input(read_input());
     part_one(&passwords_and_policies);
     part_two(&passwords_and_policies);
 }

@@ -2,13 +2,11 @@
 extern crate lazy_static;
 extern crate regex;
 
-use lib::solve;
+use lib::{read_input, solve};
 use regex::{Captures, Regex};
 use std::collections::HashMap;
-use std::fs;
 
-fn read_input() -> Vec<HashMap<String, String>> {
-    let input: String = fs::read_to_string("input.txt").expect("Failed reading input.txt");
+fn parse_input(input: String) -> Vec<HashMap<String, String>> {
     input
         .split("\n\n")
         .map(|passport| {
@@ -108,7 +106,7 @@ fn validate_field(field: &str, value: &str) -> bool {
 }
 
 fn main() {
-    let passports = read_input();
+    let passports = parse_input(read_input());
     part_one(&passports);
     part_two(&passports);
 }

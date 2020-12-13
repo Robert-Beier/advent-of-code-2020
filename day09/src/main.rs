@@ -1,6 +1,5 @@
 use day01::find_two_summands;
-use lib::solve;
-use std::fs;
+use lib::{read_input, solve};
 
 #[test]
 fn is_number_valid_should_return_true_for_valid_number() {
@@ -79,13 +78,7 @@ fn part_two(numbers: &[usize]) {
 }
 
 fn main() {
-    let input: Vec<usize> = fs::read_to_string("input.txt")
-        .expect("Failed reading input.txt")
-        .trim()
-        .to_string()
-        .lines()
-        .map(|l| l.parse().unwrap())
-        .collect();
+    let input: Vec<usize> = read_input().lines().map(|l| l.parse().unwrap()).collect();
     part_one(&input);
     part_two(&input);
 }
