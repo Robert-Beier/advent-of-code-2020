@@ -13,4 +13,4 @@ Written in Rust by Robert Beier.
 |05|220μs|350μs|
 |06|679μs|787μs|
 |09|43μs|1.9ms|
-|14|220μs|25ms|
+|14|220μs|15.6ms|

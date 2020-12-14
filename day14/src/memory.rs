@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 pub enum Instruction {
     UpdateMask(String),
@@ -87,11 +87,11 @@ fn sum_should_return_correct_sum_after_executing_version1_instructions() {
 fn get_masked_positions_should_work_for_example1() {
     let position = 42u64;
     let mask = "000000000000000000000000000000X1001X";
-    let mut expected = HashSet::new();
-    expected.insert(26u64);
-    expected.insert(27u64);
-    expected.insert(58u64);
-    expected.insert(59u64);
+    let mut expected = Vec::new();
+    expected.push(58u64);
+    expected.push(59u64);
+    expected.push(26u64);
+    expected.push(27u64);
     assert_eq!(Memory::get_masked_positions(position, mask), expected);
 }
 
@@ -161,10 +161,10 @@ impl Memory {
         number ^ 2u64.pow(flip_position as u32)
     }
 
-    fn get_masked_positions(position: u64, mask: &str) -> HashSet<u64> {
+    fn get_masked_positions(position: u64, mask: &str) -> Vec<u64> {
         let mask_ones = Self::get_mask_ones(mask);
-        let mut positions = HashSet::new();
-        positions.insert(position | mask_ones);
+        let mut positions = Vec::new();
+        positions.push(position | mask_ones);
         let floating_positions: Vec<usize> = mask
             .match_indices('X')
             .map(|(i, _)| Memory::BIT_SIZE - i - 1)
