@@ -11,10 +11,13 @@ enum Instruction {
     WriteToMemory(u64, u64),
 }
 
+type Mask = (u64, u64);
+
 #[test]
 fn get_masked_value_should_work_for_example_1() {
     let value = 11u64;
     let mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X";
+    let mask = Memory::get_mask(mask);
     assert_eq!(Memory::get_masked_value(value, mask), 73);
 }
 
@@ -22,6 +25,7 @@ fn get_masked_value_should_work_for_example_1() {
 fn get_masked_value_should_work_for_example_2() {
     let value = 101u64;
     let mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X";
+    let mask = Memory::get_mask(mask);
     assert_eq!(Memory::get_masked_value(value, mask), 101);
 }
 
@@ -29,6 +33,7 @@ fn get_masked_value_should_work_for_example_2() {
 fn get_masked_value_should_work_for_example_3() {
     let value = 0u64;
     let mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X";
+    let mask = Memory::get_mask(mask);
     assert_eq!(Memory::get_masked_value(value, mask), 64);
 }
 
@@ -71,25 +76,30 @@ impl Memory {
         }
     }
 
-    fn update(&mut self, position: u64, value: u64, mask: &str) {
+    fn update(&mut self, position: u64, value: u64, mask: Mask) {
         let masked_value = Self::get_masked_value(value, mask);
         self.memory.insert(position, masked_value);
     }
 
-    fn get_masked_value(value: u64, mask: &str) -> u64 {
-        let mask_ones = mask.replace('X', "0");
+    fn get_masked_value(value: u64, mask: Mask) -> u64 {
+        (value | mask.1) & mask.0
+    }
+
+    fn get_mask(mask: &str) -> Mask {
         let mask_zeroes = mask.replace('X', "1");
-        let mask_ones = u64::from_str_radix(&*mask_ones, 2).unwrap();
-        let mask_zeroes = u64::from_str_radix(&*mask_zeroes, 2).unwrap();
-        (value | mask_ones) & mask_zeroes
+        let mask_ones = mask.replace('X', "0");
+        (
+            u64::from_str_radix(&*mask_zeroes, 2).unwrap(),
+            u64::from_str_radix(&*mask_ones, 2).unwrap(),
+        )
     }
 
     fn execute(&mut self, instructions: &Vec<Instruction>) {
-        let mut mask = "";
+        let mut mask = (0, 0);
         for instruction in instructions {
             match instruction {
                 Instruction::UpdateMask(updated_mask) => {
-                    mask = updated_mask;
+                    mask = Self::get_mask(updated_mask);
                 }
                 Instruction::WriteToMemory(position, value) => {
                     self.update(*position, *value, mask);
