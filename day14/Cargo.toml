@@ -1,5 +1,5 @@
 [package]
-name = "advent-of-code-2020"
+name = "day14"
 version = "0.1.0"
 authors = ["Robert Beier <r.beier199@gmail.com>"]
 edition = "2018"
@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+lazy_static = "1.4.0"
+regex = "1.4.2"
