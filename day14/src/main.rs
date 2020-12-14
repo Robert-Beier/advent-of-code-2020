@@ -11,7 +11,7 @@ use regex::{Captures, Regex};
 fn parse_instructions(instructions: &String) -> Vec<Instruction> {
     lazy_static! {
         static ref MASK: Regex = Regex::new(r"^mask = (?P<mask>[01X]+)$").unwrap();
-        static ref MEM: Regex = Regex::new(r"^mem\[(?P<position>\d+)\] = (?P<value>\d+)$").unwrap();
+        static ref MEM: Regex = Regex::new(r"^mem\[(?P<address>\d+)\] = (?P<value>\d+)$").unwrap();
     }
     instructions
         .lines()
@@ -25,7 +25,7 @@ fn parse_instructions(instructions: &String) -> Vec<Instruction> {
             } else if mem.is_some() {
                 let mem = mem.unwrap();
                 return Instruction::WriteToMemory(
-                    mem.name("position").unwrap().as_str().parse().unwrap(),
+                    mem.name("address").unwrap().as_str().parse().unwrap(),
                     mem.name("value").unwrap().as_str().parse().unwrap(),
                 );
             }

@@ -84,15 +84,15 @@ fn sum_should_return_correct_sum_after_executing_version1_instructions() {
 }
 
 #[test]
-fn get_masked_positions_should_work_for_example1() {
-    let position = 42u64;
+fn get_masked_addresses_should_work_for_example1() {
+    let address = 42u64;
     let mask = "000000000000000000000000000000X1001X";
     let mut expected = Vec::new();
     expected.push(58u64);
     expected.push(59u64);
     expected.push(26u64);
     expected.push(27u64);
-    assert_eq!(Memory::get_masked_positions(position, mask), expected);
+    assert_eq!(Memory::get_masked_addresses(address, mask), expected);
 }
 
 #[test]
@@ -124,15 +124,15 @@ impl Memory {
         }
     }
 
-    fn update_version1(&mut self, position: u64, value: u64, mask: Mask) {
+    fn update_version1(&mut self, address: u64, value: u64, mask: Mask) {
         let masked_value = Self::get_masked_value(value, mask);
-        self.memory.insert(position, masked_value);
+        self.memory.insert(address, masked_value);
     }
 
-    fn update_version2(&mut self, position: u64, value: u64, mask: &str) {
-        let positions = Self::get_masked_positions(position, mask);
-        for position in positions {
-            self.memory.insert(position, value);
+    fn update_version2(&mut self, initial_address: u64, value: u64, mask: &str) {
+        let addresses = Self::get_masked_addresses(initial_address, mask);
+        for address in addresses {
+            self.memory.insert(address, value);
         }
     }
 
@@ -157,26 +157,26 @@ impl Memory {
     /**
      * Lower positions are on the right, higher position at the left.
      */
-    fn flip_bit(number: u64, flip_position: usize) -> u64 {
-        number ^ 2u64.pow(flip_position as u32)
+    fn flip_bit(number: u64, position: usize) -> u64 {
+        number ^ 2u64.pow(position as u32)
     }
 
-    fn get_masked_positions(position: u64, mask: &str) -> Vec<u64> {
+    fn get_masked_addresses(address: u64, mask: &str) -> Vec<u64> {
         let mask_ones = Self::get_mask_ones(mask);
-        let mut positions = Vec::new();
-        positions.push(position | mask_ones);
+        let mut addresses = Vec::new();
+        addresses.push(address | mask_ones);
         let floating_positions: Vec<usize> = mask
             .match_indices('X')
             .map(|(i, _)| Memory::BIT_SIZE - i - 1)
             .collect();
         for floating_position in floating_positions {
-            positions = positions
+            addresses = addresses
                 .iter()
                 .flat_map(|n| vec![*n, Self::flip_bit(*n, floating_position)])
                 .collect();
         }
 
-        positions
+        addresses
     }
 
     pub fn execute_version1(&mut self, instructions: &Vec<Instruction>) {
@@ -186,8 +186,8 @@ impl Memory {
                 Instruction::UpdateMask(updated_mask) => {
                     mask = Self::get_mask_version1(updated_mask);
                 }
-                Instruction::WriteToMemory(position, value) => {
-                    self.update_version1(*position, *value, mask);
+                Instruction::WriteToMemory(address, value) => {
+                    self.update_version1(*address, *value, mask);
                 }
             }
         }
@@ -200,8 +200,8 @@ impl Memory {
                 Instruction::UpdateMask(updated_mask) => {
                     mask = updated_mask;
                 }
-                Instruction::WriteToMemory(position, value) => {
-                    self.update_version2(*position, *value, mask);
+                Instruction::WriteToMemory(address, value) => {
+                    self.update_version2(*address, *value, mask);
                 }
             }
         }
