@@ -37,13 +37,22 @@ fn parse_instructions(instructions: &String) -> Vec<Instruction> {
 fn part_one(instructions: &Vec<Instruction>) {
     solve("Part one", || {
         let mut memory = Memory::new();
-        memory.execute(instructions);
+        memory.execute_version1(instructions);
         memory.sum()
     });
+}
+
+fn part_two(instructions: &Vec<Instruction>) {
+    solve("Part two", || {
+        let mut memory = Memory::new();
+        memory.execute_version2(instructions);
+        memory.sum()
+    })
 }
 
 fn main() {
     let input = read_input();
     let instructions = parse_instructions(&input);
     part_one(&instructions);
+    part_two(&instructions);
 }
