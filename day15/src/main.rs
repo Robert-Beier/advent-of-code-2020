@@ -62,7 +62,12 @@ fn part_one(starting_numbers: &StartingNumbers) {
     solve("Part one", || get_nth_number(starting_numbers, 2020));
 }
 
+fn part_two(starting_numbers: &StartingNumbers) {
+    solve("Part two", || get_nth_number(starting_numbers, 30000000));
+}
+
 fn main() {
     let input = vec![9, 19, 1, 6, 0, 5, 4];
     part_one(&input);
+    part_two(&input);
 }
