@@ -1,14 +1,34 @@
 use lib::{read_input, solve};
 
-type Field = Vec<(u32, u32)>;
+struct Field {
+    min1: u32,
+    max1: u32,
+    min2: u32,
+    max2: u32,
+}
 
 #[test]
 fn get_invalid_values_should_work_for_example1() {
     let values = vec![7, 3, 47, 40, 4, 50, 55, 2, 20, 38, 6, 12];
     let fields = vec![
-        vec![(1, 3), (5, 7)],
-        vec![(6, 11), (33, 44)],
-        vec![(13, 40), (45, 50)],
+        Field {
+            min1: 1,
+            max1: 3,
+            min2: 5,
+            max2: 7,
+        },
+        Field {
+            min1: 6,
+            max1: 11,
+            min2: 33,
+            max2: 44,
+        },
+        Field {
+            min1: 13,
+            max1: 40,
+            min2: 45,
+            max2: 50,
+        },
     ];
     assert_eq!(get_invalid_values(&values, &fields).iter().sum::<u32>(), 71);
 }
@@ -20,7 +40,7 @@ fn get_invalid_values(values: &Vec<u32>, fields: &Vec<Field>) -> Vec<u32> {
         .filter(|&v| {
             !fields
                 .iter()
-                .any(|f| f.iter().any(|(min, max)| v >= *min && v <= *max))
+                .any(|f| (v >= f.min1 && v <= f.max1) || (v >= f.min2 && v <= f.max2))
         })
         .collect()
 }
@@ -44,15 +64,19 @@ fn parse_fields(input: &String) -> Vec<Field> {
         .trim()
         .lines()
         .map(|l| {
-            l.split(": ")
+            let values: Vec<u32> = l
+                .split(": ")
                 .last()
                 .unwrap()
                 .split(" or ")
-                .map(|r| {
-                    let values: Vec<u32> = r.split('-').map(|v| v.parse().unwrap()).collect();
-                    (*values.get(0).unwrap(), *values.get(1).unwrap())
-                })
-                .collect()
+                .flat_map(|r| r.split('-').map(|v| v.parse().unwrap()))
+                .collect();
+            Field {
+                min1: *values.get(0).unwrap(),
+                max1: *values.get(1).unwrap(),
+                min2: *values.get(2).unwrap(),
+                max2: *values.get(3).unwrap(),
+            }
         })
         .collect()
 }
