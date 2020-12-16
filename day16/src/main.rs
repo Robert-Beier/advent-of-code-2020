@@ -1,6 +1,7 @@
 use lib::{read_input, solve};
 
 struct Field {
+    name: String,
     min1: u32,
     max1: u32,
     min2: u32,
@@ -12,18 +13,21 @@ fn get_invalid_values_should_work_for_example1() {
     let values = vec![7, 3, 47, 40, 4, 50, 55, 2, 20, 38, 6, 12];
     let fields = vec![
         Field {
+            name: "class".to_string(),
             min1: 1,
             max1: 3,
             min2: 5,
             max2: 7,
         },
         Field {
+            name: "row".to_string(),
             min1: 6,
             max1: 11,
             min2: 33,
             max2: 44,
         },
         Field {
+            name: "seat".to_string(),
             min1: 13,
             max1: 40,
             min2: 45,
@@ -64,6 +68,7 @@ fn parse_fields(input: &String) -> Vec<Field> {
         .trim()
         .lines()
         .map(|l| {
+            let name = l.split(": ").next().unwrap();
             let values: Vec<u32> = l
                 .split(": ")
                 .last()
@@ -72,6 +77,7 @@ fn parse_fields(input: &String) -> Vec<Field> {
                 .flat_map(|r| r.split('-').map(|v| v.parse().unwrap()))
                 .collect();
             Field {
+                name: name.to_string(),
                 min1: *values.get(0).unwrap(),
                 max1: *values.get(1).unwrap(),
                 min2: *values.get(2).unwrap(),
