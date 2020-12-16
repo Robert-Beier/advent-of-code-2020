@@ -87,6 +87,20 @@ fn parse_fields(input: &String) -> Vec<Field> {
         .collect()
 }
 
+fn parse_your_ticket(input: &String) -> Vec<u32> {
+    input
+        .split("your ticket:")
+        .last()
+        .unwrap()
+        .split("nearby tickets:")
+        .next()
+        .unwrap()
+        .trim()
+        .split(',')
+        .map(|v| v.parse().unwrap())
+        .collect()
+}
+
 fn part_one(tickets: &Vec<Vec<u32>>, fields: &Vec<Field>) {
     let values = tickets.iter().flatten().map(|&v| v).collect();
     solve("Part one", || {
@@ -96,7 +110,8 @@ fn part_one(tickets: &Vec<Vec<u32>>, fields: &Vec<Field>) {
 
 fn main() {
     let input = read_input();
-    let tickets = parse_nearby_tickets(&input);
     let fields = parse_fields(&input);
+    let your_ticket = parse_your_ticket(&input);
+    let tickets = parse_nearby_tickets(&input);
     part_one(&tickets, &fields);
 }
