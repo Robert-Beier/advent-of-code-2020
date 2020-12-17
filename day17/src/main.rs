@@ -1,12 +1,13 @@
 use std::collections::HashSet;
 
 type Cube = (i32, i32, i32);
+type Grid = HashSet<Cube>;
 
 #[test]
 fn get_next_state_should_return_active_when_previously_inactive_and_3_active_neighbors() {
     let cube: Cube = (0, 0, 0);
     let previous_state = false;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     grid.insert((0, 1, 0));
     grid.insert((0, 1, 1));
@@ -17,7 +18,7 @@ fn get_next_state_should_return_active_when_previously_inactive_and_3_active_nei
 fn get_next_state_should_return_inactive_when_previously_inactive_and_2_active_neighbors() {
     let cube: Cube = (0, 0, 0);
     let previous_state = false;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     grid.insert((0, 1, 0));
     assert_eq!(get_next_state(cube, previous_state, &grid), false);
@@ -28,7 +29,7 @@ fn get_next_state_should_return_inactive_when_previously_inactive_and_less_than_
 {
     let cube: Cube = (0, 0, 0);
     let previous_state = false;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     assert_eq!(get_next_state(cube, previous_state, &grid), false);
 }
@@ -38,7 +39,7 @@ fn get_next_state_should_return_inactive_when_previously_inactive_and_more_than_
 {
     let cube: Cube = (0, 0, 0);
     let previous_state = false;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     grid.insert((0, 1, 0));
     grid.insert((0, 1, 1));
@@ -50,7 +51,7 @@ fn get_next_state_should_return_inactive_when_previously_inactive_and_more_than_
 fn get_next_state_should_return_active_when_previously_active_and_3_active_neighbors() {
     let cube: Cube = (0, 0, 0);
     let previous_state = true;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     grid.insert((0, 1, 0));
     grid.insert((0, 1, 1));
@@ -61,7 +62,7 @@ fn get_next_state_should_return_active_when_previously_active_and_3_active_neigh
 fn get_next_state_should_return_active_when_previously_active_and_2_active_neighbors() {
     let cube: Cube = (0, 0, 0);
     let previous_state = true;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     grid.insert((0, 1, 0));
     assert_eq!(get_next_state(cube, previous_state, &grid), true);
@@ -71,7 +72,7 @@ fn get_next_state_should_return_active_when_previously_active_and_2_active_neigh
 fn get_next_state_should_return_inactive_when_previously_active_and_less_than_2_active_neighbors() {
     let cube: Cube = (0, 0, 0);
     let previous_state = true;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     assert_eq!(get_next_state(cube, previous_state, &grid), false);
 }
@@ -80,7 +81,7 @@ fn get_next_state_should_return_inactive_when_previously_active_and_less_than_2_
 fn get_next_state_should_return_inactive_when_previously_active_and_more_than_3_active_neighbors() {
     let cube: Cube = (0, 0, 0);
     let previous_state = true;
-    let mut grid: HashSet<Cube> = HashSet::new();
+    let mut grid: Grid = HashSet::new();
     grid.insert((0, 0, 1));
     grid.insert((0, 1, 0));
     grid.insert((0, 1, 1));
@@ -88,7 +89,7 @@ fn get_next_state_should_return_inactive_when_previously_active_and_more_than_3_
     assert_eq!(get_next_state(cube, previous_state, &grid), false);
 }
 
-fn get_next_state(cube: Cube, previous_state: bool, grid: &HashSet<Cube>) -> bool {
+fn get_next_state(cube: Cube, previous_state: bool, grid: &Grid) -> bool {
     let mut active_neighbors = 0u32;
     for x in cube.0 - 1..cube.0 + 2 {
         for y in cube.1 - 1..cube.1 + 2 {
