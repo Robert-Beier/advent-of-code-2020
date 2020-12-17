@@ -112,6 +112,35 @@ fn get_next_state(cube: Cube, previous_state: bool, grid: &Grid) -> bool {
     false
 }
 
+fn get_potential_cubes(grid: &Grid) -> Grid {
+    let mut potential_cubes = HashSet::new();
+    for &cube in grid {
+        for x in cube.0 - 1..cube.0 + 2 {
+            for y in cube.1 - 1..cube.1 + 2 {
+                for z in cube.2 - 1..cube.2 + 2 {
+                    if x == cube.0 && y == cube.1 && z == cube.2 {
+                        continue;
+                    }
+                    potential_cubes.insert((x, y, z));
+                }
+            }
+        }
+    }
+    potential_cubes
+}
+
+fn get_next_cycle(grid: &Grid) -> Grid {
+    let potential_cubes = get_potential_cubes(&grid);
+    potential_cubes
+        .iter()
+        .map(|&c| c)
+        .filter(|c| get_next_state(*c, grid.contains(c), &grid))
+        .collect()
+}
+
 fn main() {
-    println!("Hello, world!");
+    let mut grid: Grid = HashSet::new();
+    grid.insert((0, 0, 1));
+    let potential_cubes = get_potential_cubes(&grid);
+    println!("{:?}", potential_cubes.len());
 }
