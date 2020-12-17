@@ -93,6 +93,9 @@ fn get_next_state(cube: Cube, previous_state: bool, grid: &HashSet<Cube>) -> boo
     for x in cube.0 - 1..cube.0 + 2 {
         for y in cube.1 - 1..cube.1 + 2 {
             for z in cube.2 - 1..cube.2 + 2 {
+                if x == cube.0 && y == cube.1 && z == cube.2 {
+                    continue;
+                }
                 if grid.contains(&(x, y, z)) {
                     active_neighbors += 1;
                 }
