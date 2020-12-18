@@ -1,3 +1,4 @@
+use lib::{read_input, solve};
 use std::collections::HashSet;
 
 type Cube = (i32, i32, i32);
@@ -138,9 +139,35 @@ fn get_next_cycle(grid: &Grid) -> Grid {
         .collect()
 }
 
+fn parse_grid(input: &String) -> Grid {
+    input
+        .lines()
+        .enumerate()
+        .map(|(y, l)| {
+            l.chars()
+                .enumerate()
+                .filter_map(|(x, c)| match c {
+                    '#' => Option::Some((x as i32, y as i32, 0i32)),
+                    _ => Option::None,
+                })
+                .collect::<Vec<Cube>>()
+        })
+        .flatten()
+        .collect()
+}
+
+fn part_one(grid: &Grid) {
+    solve("Part one", || {
+        let mut current_grid = get_next_cycle(&grid);
+        for _ in 0..5 {
+            current_grid = get_next_cycle(&grid);
+        }
+        current_grid.len()
+    });
+}
+
 fn main() {
-    let mut grid: Grid = HashSet::new();
-    grid.insert((0, 0, 1));
-    let potential_cubes = get_potential_cubes(&grid);
-    println!("{:?}", potential_cubes.len());
+    let input = read_input();
+    let grid = parse_grid(&input);
+    part_one(&grid);
 }
