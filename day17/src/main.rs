@@ -130,6 +130,38 @@ fn get_potential_cubes(grid: &Grid) -> Grid {
     potential_cubes
 }
 
+#[test]
+fn get_next_cycle_should_solve_example1() {
+    let grid = "\
+    .#.
+    ..#
+    ###";
+    let expected_minus_one = "\
+    ...
+    #..
+    ..#
+    .#.";
+    let expected_zero = "\
+    ...
+    #.#
+    .##
+    .#.";
+    let expected_plus_one = "\
+    ...
+    #..
+    ..#
+    .#.";
+    let grid = parse_grid(&grid.to_string(), 0);
+    let expected_minus_one = parse_grid(&expected_minus_one.to_string(), -1);
+    let expected_zero = parse_grid(&expected_zero.to_string(), 0);
+    let expected_plus_one = parse_grid(&expected_plus_one.to_string(), 1);
+    let mut expected = HashSet::new();
+    expected.extend(expected_minus_one);
+    expected.extend(expected_zero);
+    expected.extend(expected_plus_one);
+    assert_eq!(get_next_cycle(&grid), expected);
+}
+
 fn get_next_cycle(grid: &Grid) -> Grid {
     let potential_cubes = get_potential_cubes(&grid);
     potential_cubes
@@ -139,15 +171,16 @@ fn get_next_cycle(grid: &Grid) -> Grid {
         .collect()
 }
 
-fn parse_grid(input: &String) -> Grid {
+fn parse_grid(input: &String, z_index: i32) -> Grid {
     input
         .lines()
         .enumerate()
         .map(|(y, l)| {
-            l.chars()
+            l.trim()
+                .chars()
                 .enumerate()
                 .filter_map(|(x, c)| match c {
-                    '#' => Option::Some((x as i32, y as i32, 0i32)),
+                    '#' => Option::Some((x as i32, y as i32, z_index)),
                     _ => Option::None,
                 })
                 .collect::<Vec<Cube>>()
@@ -160,7 +193,7 @@ fn part_one(grid: &Grid) {
     solve("Part one", || {
         let mut current_grid = get_next_cycle(&grid);
         for _ in 0..5 {
-            current_grid = get_next_cycle(&grid);
+            current_grid = get_next_cycle(&current_grid);
         }
         current_grid.len()
     });
@@ -168,6 +201,6 @@ fn part_one(grid: &Grid) {
 
 fn main() {
     let input = read_input();
-    let grid = parse_grid(&input);
+    let grid = parse_grid(&input, 0);
     part_one(&grid);
 }
