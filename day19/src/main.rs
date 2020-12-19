@@ -1,51 +1,27 @@
 use lib::read_input;
 
-type Sequence = (u32, u32);
+type Sequence = Vec<u32>;
 
 #[derive(Debug)]
 enum Rule {
     Char(char),
-    Single(u32),
-    Sequence(Sequence),
-    LogicalOrSequence(Sequence, Sequence),
-    LogicalOrSingle(u32, u32),
+    PossibleSequences(Vec<Sequence>),
 }
 
 /** input should be something like `"a"`, `12 13 | 13 12` or `12 13`
 */
 fn parse_rule(input: &str) -> Rule {
     return if input.contains('|') {
-        let numbers: Vec<u32> = input
-            .split('|')
-            .flat_map(|s| {
-                s.trim()
-                    .split(' ')
-                    .map(|n| n.parse().expect("TEST"))
-                    .collect::<Vec<u32>>()
-            })
-            .collect();
-        match numbers.len() {
-            2 => Rule::LogicalOrSingle(*numbers.get(0).unwrap(), *numbers.get(1).unwrap()),
-            4 => Rule::LogicalOrSequence(
-                (*numbers.get(0).unwrap(), *numbers.get(1).unwrap()),
-                (*numbers.get(2).unwrap(), *numbers.get(3).unwrap()),
-            ),
-            _ => {
-                panic!()
-            }
-        }
+        Rule::PossibleSequences(
+            input
+                .split('|')
+                .map(|s| s.trim().split(' ').map(|n| n.parse().unwrap()).collect())
+                .collect(),
+        )
     } else if input.contains('"') {
-        let character: char = input.chars().filter(|&c| c != '"').next().unwrap();
-        Rule::Char(character)
+        Rule::Char(input.chars().filter(|&c| c != '"').next().unwrap())
     } else {
-        let numbers: Vec<u32> = input.split(' ').map(|n| n.parse().unwrap()).collect();
-        match numbers.len() {
-            1 => Rule::Single(*numbers.get(0).unwrap()),
-            2 => Rule::Sequence((*numbers.get(0).unwrap(), *numbers.get(1).unwrap())),
-            _ => {
-                panic!()
-            }
-        }
+        Rule::PossibleSequences(vec![input.split(' ').map(|n| n.parse().unwrap()).collect()])
     };
 }
 
