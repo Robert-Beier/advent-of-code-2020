@@ -1,3 +1,5 @@
+use crate::modification::Modification;
+
 pub struct Tile {
     id: u16,
     edge_top: u16,
