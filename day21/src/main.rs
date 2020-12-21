@@ -1,7 +1,7 @@
 #![feature(iterator_fold_self)]
 
 use lib::{read_input, solve};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 struct Food {
     ingredients: Vec<String>,
@@ -10,7 +10,10 @@ struct Food {
 
 #[cfg(test)]
 mod tests {
-    use crate::{find_impossible_ingredients, find_possible_ingredients_for_allergen, Food};
+    use crate::{
+        find_impossible_ingredients, find_possible_ingredients_for_allergen,
+        get_ingredients_by_alphabetic_allergens, get_ingredients_with_allergens, Food,
+    };
 
     fn get_example_foods() -> Vec<Food> {
         vec![
@@ -86,6 +89,25 @@ mod tests {
         assert!(result.contains(&"sbzzf"));
         assert!(result.contains(&"trh"));
     }
+
+    #[test]
+    fn get_ingredients_with_allergens_should_work_for_example() {
+        let foods = get_example_foods();
+        let result = get_ingredients_with_allergens(&foods);
+        assert_eq!(result.len(), 3);
+        assert!(result.contains(&("mxmxvkd", "dairy")));
+        assert!(result.contains(&("sqjhc", "fish")));
+        assert!(result.contains(&("fvjkl", "soy")));
+    }
+
+    #[test]
+    fn get_ingredients_by_alphabetic_allergens_should_work_for_example() {
+        let foods = get_example_foods();
+        assert_eq!(
+            get_ingredients_by_alphabetic_allergens(&foods),
+            vec!["mxmxvkd", "sqjhc", "fvjkl"]
+        )
+    }
 }
 
 fn find_possible_ingredients_for_allergen<'a>(
@@ -158,8 +180,58 @@ fn count_impossible_ingredients(foods: &Vec<Food>) -> usize {
         .count()
 }
 
+fn get_ingredients_with_allergens(foods: &Vec<Food>) -> Vec<(&str, &str)> {
+    let mut ingredients_with_allergens: Vec<(&str, &str)> = Vec::new();
+    let mut possible_ingredients_by_allergen: HashMap<&str, Vec<&str>> = get_all_allergens(&foods)
+        .iter()
+        .map(|&a| (a, find_possible_ingredients_for_allergen(&foods, a)))
+        .collect();
+    loop {
+        if possible_ingredients_by_allergen.len() == 0 {
+            break;
+        }
+        let allergens_with_one_ingredient: HashMap<&str, &str> = possible_ingredients_by_allergen
+            .iter()
+            .filter(|(_, ingredients)| ingredients.len() == 1)
+            .map(|(&a, is)| (a, *is.get(0).unwrap()))
+            .collect();
+        if allergens_with_one_ingredient.len() == 0 {
+            panic!("No allergens left with one ingredient");
+        }
+        for (allergen, ingredient) in allergens_with_one_ingredient.iter() {
+            ingredients_with_allergens.push((ingredient, allergen));
+            possible_ingredients_by_allergen.remove(allergen);
+            possible_ingredients_by_allergen = possible_ingredients_by_allergen
+                .into_iter()
+                .map(|(a, is)| {
+                    if is.contains(&ingredient) {
+                        return (a, is.into_iter().filter(|i| i != ingredient).collect());
+                    }
+                    (a, is)
+                })
+                .collect();
+        }
+    }
+    ingredients_with_allergens
+}
+
+fn get_ingredients_by_alphabetic_allergens(foods: &Vec<Food>) -> Vec<&str> {
+    let mut ingredients_with_allergens = get_ingredients_with_allergens(&foods);
+    ingredients_with_allergens.sort_by(|(_, a1), (_, a2)| a1.cmp(a2));
+    ingredients_with_allergens
+        .into_iter()
+        .map(|(i, _)| i)
+        .collect()
+}
+
 fn part_one(foods: &Vec<Food>) {
     solve("Part one", || count_impossible_ingredients(&foods));
+}
+
+fn part_two(foods: &Vec<Food>) {
+    solve("Part two", || {
+        get_ingredients_by_alphabetic_allergens(&foods).join(",")
+    })
 }
 
 fn parse_foods(input: &String) -> Vec<Food> {
@@ -192,4 +264,5 @@ fn main() {
     let input = read_input();
     let foods = parse_foods(&input);
     part_one(&foods);
+    part_two(&foods);
 }
