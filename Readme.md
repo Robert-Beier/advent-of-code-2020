@@ -27,3 +27,4 @@ Written in Rust by Robert Beier.
 |19|2.8ms||
 |20|||
 |21|500μs|280μs|
+|22|18μs||
