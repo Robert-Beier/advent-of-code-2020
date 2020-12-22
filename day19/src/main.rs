@@ -81,10 +81,40 @@ fn part_one(rules: &Vec<Rule>, messages: &Vec<&str>) {
     });
 }
 
+fn part_two(rules: &Vec<Rule>, messages: &Vec<&str>) {
+    solve("Part two", || {
+        let rule_42 = compile_rule(&rules, 42);
+        let rule_31 = compile_rule(&rules, 31);
+        let pattern = format!("^((?:{})+)((?:{})+)$", rule_42, rule_31);
+        let pattern = Regex::new(&*pattern).unwrap();
+        let rule_42 = format!("({})", rule_42);
+        let rule_42 = Regex::new(&*rule_42).unwrap();
+        let rule_31 = format!("({})", rule_31);
+        let rule_31 = Regex::new(&*rule_31).unwrap();
+        messages
+            .iter()
+            .filter(|m| {
+                let captures = pattern.captures(m);
+                match captures {
+                    None => false,
+                    Some(captures) => {
+                        let rule_42_captures =
+                            rule_42.find_iter(captures.get(1).unwrap().as_str()).count();
+                        let rule_31_captures =
+                            rule_31.find_iter(captures.get(2).unwrap().as_str()).count();
+                        rule_42_captures > rule_31_captures
+                    }
+                }
+            })
+            .count()
+    });
+}
+
 fn main() {
     let input = read_input();
     let input: Vec<&str> = input.split("\n\n").collect();
     let rules = parse_rules(input.get(0).unwrap());
     let messages = parse_messages(input.get(1).unwrap());
     part_one(&rules, &messages);
+    part_two(&rules, &messages);
 }
