@@ -116,22 +116,55 @@ mod tests {
     }
 }
 
+fn give_cards_to_winner(
+    deck_player_one: &mut VecDeque<u32>,
+    deck_player_two: &mut VecDeque<u32>,
+    card_player_one: u32,
+    card_player_two: u32,
+    winner: AttendingPlayer,
+) {
+    match winner {
+        AttendingPlayer::One => {
+            deck_player_one.push_back(card_player_one);
+            deck_player_one.push_back(card_player_two);
+        }
+        AttendingPlayer::Two => {
+            deck_player_two.push_back(card_player_two);
+            deck_player_two.push_back(card_player_one);
+        }
+    }
+}
+
 fn play_round(
     deck_player_one: &mut VecDeque<u32>,
     deck_player_two: &mut VecDeque<u32>,
     card_player_one: u32,
     card_player_two: u32,
 ) {
-    match card_player_one.cmp(&card_player_two) {
-        Ordering::Less => {
-            deck_player_two.push_back(card_player_two);
-            deck_player_two.push_back(card_player_one);
-        }
+    let winner = match card_player_one.cmp(&card_player_two) {
+        Ordering::Less => AttendingPlayer::Two,
         Ordering::Equal => panic!(),
-        Ordering::Greater => {
-            deck_player_one.push_back(card_player_one);
-            deck_player_one.push_back(card_player_two);
-        }
+        Ordering::Greater => AttendingPlayer::One,
+    };
+    give_cards_to_winner(
+        deck_player_one,
+        deck_player_two,
+        card_player_one,
+        card_player_two,
+        winner,
+    );
+}
+
+fn get_winner(
+    deck_player_one: &VecDeque<u32>,
+    deck_player_two: &VecDeque<u32>,
+) -> Option<AttendingPlayer> {
+    if deck_player_one.len() > 0 && deck_player_two.len() == 0 {
+        Some(AttendingPlayer::One)
+    } else if deck_player_two.len() > 0 && deck_player_one.len() == 0 {
+        Some(AttendingPlayer::Two)
+    } else {
+        None
     }
 }
 
@@ -139,7 +172,11 @@ fn play_game(
     deck_player_one: &mut VecDeque<u32>,
     deck_player_two: &mut VecDeque<u32>,
 ) -> AttendingPlayer {
-    while deck_player_one.len() > 0 && deck_player_two.len() > 0 {
+    loop {
+        let winner = get_winner(deck_player_one, deck_player_two);
+        if winner.is_some() {
+            return winner.unwrap();
+        }
         let card_player_one = deck_player_one.pop_front().unwrap();
         let card_player_two = deck_player_two.pop_front().unwrap();
         play_round(
@@ -148,13 +185,6 @@ fn play_game(
             card_player_one,
             card_player_two,
         );
-    }
-    if deck_player_one.len() > 0 && deck_player_two.len() == 0 {
-        AttendingPlayer::One
-    } else if deck_player_two.len() > 0 && deck_player_one.len() == 0 {
-        AttendingPlayer::Two
-    } else {
-        panic!()
     }
 }
 
@@ -172,16 +202,13 @@ fn play_round_recursive(
         let mut sub_deck_player_two = deck_player_two.clone();
         sub_deck_player_two.truncate(card_player_two as usize);
         let winner = play_game_recursive(&mut sub_deck_player_one, &mut sub_deck_player_two);
-        match winner {
-            AttendingPlayer::One => {
-                deck_player_one.push_back(card_player_one);
-                deck_player_one.push_back(card_player_two);
-            }
-            AttendingPlayer::Two => {
-                deck_player_two.push_back(card_player_two);
-                deck_player_two.push_back(card_player_one);
-            }
-        }
+        give_cards_to_winner(
+            deck_player_one,
+            deck_player_two,
+            card_player_one,
+            card_player_two,
+            winner,
+        );
     } else {
         play_round(
             deck_player_one,
@@ -212,6 +239,22 @@ fn configuration_history_contains_configuration(
     })
 }
 
+fn get_winner_recursive(
+    configuration_history: &ConfigurationHistory,
+    deck_player_one: &VecDeque<u32>,
+    deck_player_two: &VecDeque<u32>,
+) -> Option<AttendingPlayer> {
+    if configuration_history_contains_configuration(
+        &configuration_history,
+        deck_player_one,
+        deck_player_two,
+    ) {
+        Some(AttendingPlayer::One)
+    } else {
+        get_winner(deck_player_one, deck_player_two)
+    }
+}
+
 /** Return value signals the winning player.
 */
 fn play_game_recursive(
@@ -219,14 +262,11 @@ fn play_game_recursive(
     deck_player_two: &mut VecDeque<u32>,
 ) -> AttendingPlayer {
     let mut configuration_history: ConfigurationHistory = Vec::new();
-    while deck_player_one.len() > 0
-        && deck_player_two.len() > 0
-        && !configuration_history_contains_configuration(
-            &configuration_history,
-            deck_player_one,
-            deck_player_two,
-        )
-    {
+    loop {
+        let winner = get_winner_recursive(&configuration_history, deck_player_one, deck_player_two);
+        if winner.is_some() {
+            return winner.unwrap();
+        }
         add_configuration_to_history(&mut configuration_history, deck_player_one, deck_player_two);
         let card_player_one = deck_player_one.pop_front().unwrap();
         let card_player_two = deck_player_two.pop_front().unwrap();
@@ -236,19 +276,6 @@ fn play_game_recursive(
             card_player_one,
             card_player_two,
         );
-    }
-    if configuration_history_contains_configuration(
-        &configuration_history,
-        deck_player_one,
-        deck_player_two,
-    ) {
-        AttendingPlayer::One
-    } else if deck_player_one.len() > 0 && deck_player_two.len() == 0 {
-        AttendingPlayer::One
-    } else if deck_player_two.len() > 0 && deck_player_one.len() == 0 {
-        AttendingPlayer::Two
-    } else {
-        panic!()
     }
 }
 
