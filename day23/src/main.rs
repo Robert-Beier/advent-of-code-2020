@@ -3,8 +3,8 @@ use lib::solve;
 #[cfg(test)]
 mod tests {
     use crate::{
-        get_destination_cup_index, get_next_cup_label, get_solution_labels, insert_cups, play_game,
-        play_move, take_three_cups,
+        get_destination_cup_index, get_next_cup_label, get_solution_part_one, insert_cups,
+        play_game, play_move, take_three_cups,
     };
 
     #[test]
@@ -141,16 +141,16 @@ mod tests {
     }
 
     #[test]
-    fn get_solution_labels_works_for_example1() {
+    fn get_solution_part_one_works_for_example1() {
         let cups = vec![5, 8, 3, 7, 4, 1, 9, 2, 6];
-        let solution_labels = get_solution_labels(&cups);
+        let solution_labels = get_solution_part_one(&cups);
         assert_eq!(solution_labels, "92658374")
     }
 
     #[test]
-    fn get_solution_labels_works_for_example2() {
+    fn get_solution_part_one_works_for_example2() {
         let cups = vec![2, 9, 1, 6, 7, 3, 8, 4, 5];
-        let solution_labels = get_solution_labels(&cups);
+        let solution_labels = get_solution_part_one(&cups);
         assert_eq!(solution_labels, "67384529")
     }
 }
@@ -212,7 +212,7 @@ fn play_game(cups: &mut Vec<u32>, number_of_moves: u32) {
     }
 }
 
-fn get_solution_labels(cups: &Vec<u32>) -> String {
+fn get_solution_part_one(cups: &Vec<u32>) -> String {
     let label_one_index = cups.iter().position(|c| *c == 1).unwrap();
     let before = &cups[0..label_one_index];
     let behind = if label_one_index + 1 < cups.len() {
@@ -224,15 +224,37 @@ fn get_solution_labels(cups: &Vec<u32>) -> String {
     behind.iter().chain(before).map(|c| c.to_string()).collect()
 }
 
+fn get_solution_part_two(cups: &Vec<u32>) -> u32 {
+    let label_one_index = cups.iter().position(|c| *c == 1).unwrap();
+    [1, 2]
+        .iter()
+        .map(|i| (label_one_index + i) % cups.len())
+        .map(|i| cups.get(i).unwrap())
+        .fold(1, |product, c| product * *c)
+}
+
 fn part_one(cups: &Vec<u32>) {
     solve("Part one", || {
         let mut cups = cups.clone();
         play_game(&mut cups, 100);
-        get_solution_labels(&cups)
+        get_solution_part_one(&cups)
+    });
+}
+
+fn part_two(cups: &Vec<u32>) {
+    // Solution: 637703 * 647622 = 412990492266
+    solve("Part two", || {
+        let mut cups = cups.clone();
+        play_game(&mut cups, 10_000_000);
+        get_solution_part_two(&cups)
     });
 }
 
 fn main() {
-    let cups = vec![9, 6, 3, 2, 7, 5, 4, 8, 1];
+    let mut cups = vec![9, 6, 3, 2, 7, 5, 4, 8, 1];
     part_one(&cups);
+    for c in 10..1_000_001 {
+        cups.push(c);
+    }
+    part_two(&cups);
 }
